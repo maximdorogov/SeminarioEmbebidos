@@ -5,7 +5,8 @@
 #define TP1_2 (2)
 #define TP1_3 (3)
 #define TP1_4 (4)
-#define TEST (TP1_4)
+#define TP1_5 (5)
+#define TEST (TP1_5)
 
 
 
@@ -201,7 +202,60 @@ void myTickHook( void *ptr ){
 
 #endif
 
+#if (TEST == TP1_5)
 
-/* UART for debug messages. */
+#define LED_QTY_MAX  4
+
+typedef enum{BTN_ON = 0,
+			BTN_OFF}btn_status_t;
+
+bool_t IsPressed(gpioMap_t);
+
+int main(void){
+
+
+	uint8_t leds[LED_QTY_MAX] = {LEDB,LED1,LED2,LED3};
+	size_t counter = 0;
+
+	boardConfig();
+	gpioConfig( GPIO0, GPIO_INPUT );
+	gpioConfig( GPIO1, GPIO_OUTPUT );
+
+
+	while(1) {
+
+		if (IsPressed(TEC1)){
+
+			if(counter != 0){
+
+				gpioWrite( leds[counter-1], LOW );
+				if(counter == LED_QTY_MAX) {counter = 0;}
+
+			}
+
+			gpioWrite( leds[counter], HIGH);
+
+			counter ++;
+
+
+		}
+	}
+
+	return 0 ;
+}
+
+bool_t IsPressed(gpioMap_t pin){
+
+	int btn_past_state;
+	int btn_actual_state = !gpioRead(pin);
+
+	btn_past_state =  btn_actual_state;
+
+	return (!gpioRead(pin) == btn_actual_state) && (btn_past_state == TRUE);
+
+
+}
+
+#endif
 
 
